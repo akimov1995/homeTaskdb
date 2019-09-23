@@ -22,7 +22,7 @@ public class ArtistDao {
             preparedStatement.setInt(2,artist.getSalary());
             preparedStatement.setString(3,artist.getLabelName());
             preparedStatement.executeUpdate();
-            logger.info(MessageFormat.format("В таблицу artists добавлен исполгитель = {0}",artist));
+            logger.info(MessageFormat.format("В таблицу artists добавлен исполнитель = {0}",artist));
         }
         catch (SQLException ex){
             logger.error(ex.getMessage());
