@@ -2,18 +2,20 @@ package dao;
 
 import model.Album;
 import model.Artist;
+import org.apache.log4j.Logger;
 import utils.JdbcUtils;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.MessageFormat;
 
 public class AlbumDao {
+    private static Logger logger = Logger.getLogger(AlbumDao.class);
 
     public void addAlbum(Album album) {
-        Connection connection = JdbcUtils.getConnection();
-        try {
+        try(Connection connection = JdbcUtils.getConnection()){
             PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO albums(name, genre, " +
                     "copies_count, artist_id) VALUES (?,?,?,?);");
 
@@ -22,24 +24,16 @@ public class AlbumDao {
             preparedStatement.setInt(3,album.getCopiesCount());
             preparedStatement.setInt(4,album.getArtistId());
             preparedStatement.executeUpdate();
+
+            logger.info(MessageFormat.format("В таблицу albums добавлен альбом = {0}",album));
         }
         catch (SQLException ex){
-            System.out.println(ex.getMessage());
-        }
-        finally {
-            if(connection != null) {
-                try {
-                    connection.close();
-                }
-                catch (SQLException ex) {
-                    System.out.println(ex.getMessage());
-                }
-            }
+            logger.error(ex.getMessage());
         }
     }
+
     public void updateAlbum(Album album) {
-        Connection connection = JdbcUtils.getConnection();
-        try {
+        try(Connection connection = JdbcUtils.getConnection()){
             PreparedStatement preparedStatement = connection.prepareStatement("UPDATE albums SET " +
                     "name = ?, genre = ?, copies_count = ?, artist_id = ? WHERE album_id = ?;");
 
@@ -49,51 +43,31 @@ public class AlbumDao {
             preparedStatement.setInt(4, album.getArtistId());
             preparedStatement.setInt(5, album.getId());
             preparedStatement.executeUpdate();
+
+            logger.info(MessageFormat.format("В таблице albums изменён альбом с id = {0}," +
+                    " теперь album = {1}",album.getId(),album));
         }
         catch (SQLException ex){
-            System.out.println(ex.getMessage());
-        }
-        finally {
-            if(connection != null) {
-                try {
-                    connection.close();
-                }
-                catch (SQLException ex) {
-                    System.out.println(ex.getMessage());
-                }
-            }
+            logger.error(ex.getMessage());
         }
     }
 
-
-
     public void deleteAlbum(int id) {
-        Connection connection = JdbcUtils.getConnection();
-        try {
+        try(Connection connection = JdbcUtils.getConnection()){
             PreparedStatement preparedStatement = connection.prepareStatement
                     ("DELETE FROM albums WHERE album_id = ?");
             preparedStatement.setInt(1, id);
             preparedStatement.executeUpdate();
+            logger.info(MessageFormat.format("Из таблицы albums удалён альбом с id = {0}",id));
         }
         catch (SQLException ex) {
-            System.out.println(ex.getMessage());
-        }
-        finally {
-            if(connection != null) {
-                try {
-                    connection.close();
-                }
-                catch (SQLException ex) {
-                    System.out.println(ex.getMessage());
-                }
-            }
+            logger.error(ex.getMessage());
         }
     }
 
-        public Album getAlbumById(int id) {
-        Connection connection = JdbcUtils.getConnection();
+    public Album getAlbumById(int id) {
         Album album = null;
-        try {
+        try(Connection connection = JdbcUtils.getConnection()){
             PreparedStatement preparedStatement = connection.prepareStatement
                     ("SELECT * FROM albums WHERE album_id = ?");
             preparedStatement.setInt(1, id);
@@ -108,18 +82,9 @@ public class AlbumDao {
             }
         }
         catch (SQLException ex) {
-            System.out.println(ex.getMessage());
+            logger.error(ex.getMessage());
         }
-        finally {
-            if(connection != null) {
-                try {
-                    connection.close();
-                }
-                catch (SQLException ex) {
-                    System.out.println(ex.getMessage());
-                }
-            }
-        }
+        logger.info(MessageFormat.format("Из таблицы albums выбран альбом с id = {0},album = {1}",id,album));
         return album;
     }
 }

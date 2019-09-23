@@ -40,4 +40,14 @@ public class Track {
     public void setAlbumId(Integer albumId) {
         this.albumId = albumId;
     }
+
+    @Override
+    public String toString() {
+        return "Track{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", producerName='" + producerName + '\'' +
+                ", albumId=" + albumId +
+                '}';
+    }
 }
